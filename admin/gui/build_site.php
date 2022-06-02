@@ -12,13 +12,15 @@
 
   $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist' )];
   $localFolderPath = explode('/', $filestructures['localfolder']);
+  $root = $filestructures['root'];
   foreach($filestructures['localfolder'] as $id => $folder){
     if (!file_exists($folder)) {
-      mkdir($filestructures['root'] .  $folder, 0777);
+      mkdir($root .  $folder, 0777);
       echo "The directory ".$folder . " was successfully created.<br>";
     } else {
       echo "The directory ".$folder . " exists.<br>";
     }
+    $root = $root . $folder . '/';
   }
   // foreach($filestructures as $key => $dirname){
   //   if($key === 'root'){
