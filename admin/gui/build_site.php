@@ -1,19 +1,10 @@
 <?php 
-// if(isset($_POST['submit'])  && !empty($_POST['post_types'])){
-//   $postTypes = explode(',', $_POST['post_types']);
-//   $posts = get_posts([
-//     'posts_per_page' => -1,
-//     'post_status' => 'publish',
-//     'post_type' => $postTypes,
-//   ]);
-
-
   /* Check is diirectory exist otherwise create your own directories */
 
   $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist' )];
   $localFolderPath = explode('/', $filestructures['localfolder']);
   $root = $filestructures['root'];
-  foreach($filestructures['localfolder'] as $id => $folder){
+  foreach( $localFolderPath as $id => $folder){
     if (!file_exists($folder)) {
       mkdir($root .  $folder, 0777);
       echo "The directory ".$folder . " was successfully created.<br>";
@@ -22,19 +13,6 @@
     }
     $root = $root . $folder . '/';
   }
-  // foreach($filestructures as $key => $dirname){
-  //   if($key === 'root'){
-  //     $dirname = 'dist';
-  //     $filename = $filestructures['root'] . $dirname . '/';
-  //     if (!file_exists($filename)) {
-  //       mkdir($filestructures['root'] .  $dirname, 0777);
-  //       echo "The directory ".$dirname . " was successfully created.<br>";
-  //     } else {
-  //       echo "The directory ".$dirname . " exists.<br>";
-  //     }
-  //   }
-  // }
-
   $subFolderName = get_option('subfolder-name',  '' );
   // $allUrls = array(
   //     'https://dev-test.monstar-lab.com/bd/ml-news/monstarlab-enters-into-agreement-to-acquire-ecap-expects-to-extend-end-to-end-digital-transformation-services-in-mena-region/',
@@ -292,7 +270,10 @@
   foreach($posts as $key => $post){
    array_push($allUrls , get_permalink($post) );
   }
-
+  $terms = get_terms('ml-expertinsights-category', ['hide_empty' => true]);
+  foreach($terms as $key => $value){
+    array_push($allUrls , get_category_link($value) );
+  }
   // foreach( $allUrls as $key => $mainURL){
   //   $html = file_get_contents( $mainURL);
   //   if($mainURL === $homeURL){
@@ -325,8 +306,6 @@
   //   fwrite($myfile, $html);
   //   fclose($myfile);
   // }
-
-
 ?>
 
 <div class="wrap">

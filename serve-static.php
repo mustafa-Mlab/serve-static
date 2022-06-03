@@ -4,12 +4,12 @@
  * @package Serve Static
  * @since   1.0.0
  * @version 1.0.0
- * 
+ *
  * @wordpress-plugin
  * Plugin Name: Serve Static
  * Plugin URI: http://mkhossain.com/development/plugins/serve-static
  * Description: This plugin will help to make a static site using WordPress, in this way ther will be no server required at all, no RDS or Database. 
- * Author: MD Mustafa Kamal Hossain	
+ * Author: MD Mustafa Kamal Hossain
  * Version: 1.0.0
  * Author URI: http://mkhossain.com
  * Text Domain: serve_static
