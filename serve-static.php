@@ -87,6 +87,15 @@ function serve_static_add_settings_page() {
     'nss_build_site',
     6
   );
+  $submenu[] = add_submenu_page(
+    'sarve-static/options-settings.php',
+    __( 'Update Repo', 'serve_static' ),
+    __( 'Update Repo', 'serve_static' ),
+    'manage_options',
+    'serve-static/update-repo.php',
+    'nss_update_repo',
+    6
+  );
   
   // $submenu[] = add_submenu_page(
   //   'wp-copier/options-settings.php',
@@ -111,8 +120,8 @@ require_once('admin/gui/build_site.php');
 }
 
 
-function nss_repair_content(){
-require_once('admin/gui/repair_content.php');
+function nss_update_repo(){
+require_once('admin/gui/update_repo.php');
 }
 
 
@@ -253,3 +262,21 @@ function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldernam
   }
   exit();
 }
+
+
+function updateGithubRepo(){
+  $path = "/home/nisan/Sites/rnd/bd-site"; 
+  $a='';
+  chdir($path);
+  exec("git add .");  
+  // var_dump(exec("git branch"));  
+  // var_dump(exec("git log"));  
+  // var_dump(exec("git remote -v"));  
+  exec("git commit -m'" . time() . "'");
+  exec("git push origin master");
+  echo "<h3 align = center> Succesfully commited all the files.</h3>";
+}
+.
+
+add_action( 'wp_ajax_updateGithubRepo', 'updateGithubRepo' );
+add_action( 'wp_ajax_nopriv_updateGithubRepo', 'updateGithubRepo' );

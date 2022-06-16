@@ -81,6 +81,24 @@
         // $('.report .loading').hide();
         // $(".report").hide();
         // console.log("Passed: ", passed, "Failed: ", failed);
+        $.ajax({
+          type: 'POST',
+          url: ajax.ajaxurl,
+          data: {
+            'action' : "updateGithubRepo",
+          },
+          success: function(response){
+            // if(response === 'null'){
+            //   failed.push(postID);
+            // }else{
+            //   passed.push(postID);
+            //   // passed[postID] = response;
+            // }
+            console.log(response);
+            // $('.report .items-finished').append('<li>' + postID + ' ended copying as ' + response + ' </li>');
+          },
+          async:false
+        });
         $('form').append("<div class='sucess' style='color: green; font-size:'60px'; text-align:'center'; '>Done</div>");
       };
       forLoop();
