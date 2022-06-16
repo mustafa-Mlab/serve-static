@@ -276,7 +276,7 @@ function updateGithubRepo(){
   exec("git push origin master");
   echo "<h3 align = center> Succesfully commited all the files.</h3>";
 }
-.
+
 
 add_action( 'wp_ajax_updateGithubRepo', 'updateGithubRepo' );
 add_action( 'wp_ajax_nopriv_updateGithubRepo', 'updateGithubRepo' );
