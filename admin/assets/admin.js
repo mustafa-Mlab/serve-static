@@ -43,7 +43,8 @@
           //   passed.push(postID);
           //   // passed[postID] = response;
           // }
-          console.log(response);
+          $('.progress-report > ul').append('<li>' + response + '</li>');
+          console.log("the response is : ", response);
           // $('.report .items-finished').append('<li>' + postID + ' ended copying as ' + response + ' </li>');
         },
         async:false

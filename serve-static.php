@@ -163,7 +163,8 @@ function nss_build_page(){
     $subURL2 = '';
   }
   $paths = explode('/', $subURL2);
-  $thisPath = $filestructures['root'] . $filestructures['localfolder'] . '/';
+  $localwslash = ($filestructures['localfolder'] == '')? '' : $filestructures['localfolder'] . '/';
+  $thisPath = $filestructures['root'] . $localwslash;
   foreach($paths as $key => $path ){
     $filename = $thisPath . $path . '/';
     if (!file_exists($filename)) {
@@ -191,12 +192,13 @@ function nss_build_page(){
   $rehome = str_replace("-","\-",$rehome);
   $pattern = '/(<a\s[^>]*href\s*=\s*([\"\']?))(?:' . $rehome . ')([^\" >]*?)/Ui';
   // $html = preg_replace($pattern, '${1}http://cache-bd.localhost${3}', $html);
+
   $html = preg_replace($pattern, '${1}'. $localServer .'${3}', $html);
   /* Now write html in file */
   $myfile = fopen($thisPath . "index.html", "c") or die("Unable to open file!");
   fwrite($myfile, $html);
   fclose($myfile);
-  echo $thisPath .'/index.html' ;
+  echo $thisPath .'index.html' ;
 
   if($pageFlag == 1){
     nss_build_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
@@ -219,7 +221,9 @@ function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldernam
   $subURL = str_replace($homeURL,"", $url);
   $subURL2 = str_replace($subfoldername ."/","", $subURL);
   $paths = explode('/', $subURL2);
-  $thisPath = $filestructures['root'] . $filestructures['localfolder'] . '/';
+  $localwslash = ($filestructures['localfolder'] == '')? '' : $filestructures['localfolder'] . '/';
+  $thisPath = $filestructures['root'] . $localwslash;
+
   foreach($paths as $key => $path ){
     $filename = $thisPath . $path . '/';
     if (!file_exists($filename)) {
@@ -256,7 +260,7 @@ function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldernam
   $myfile = fopen($thisPath . "index.html", "w") or die("Unable to open file!");
   fwrite($myfile, $html);
   fclose($myfile);
-  echo $thisPath .'/index.html' ;
+  echo $thisPath .'index.html' ;
   if($pageFlag  == 1){
     nss_build_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
   }
@@ -265,28 +269,15 @@ function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldernam
 
 
 function updateGithubRepo(){
-  //$path = "/var/www/html/bd/dist";
-  $a='/home/ubuntu';
-  //$b = "/var/www/html/bd";
-  chdir($a);
-  //$output = shell_exec("sudo cp -r /var/www/html/bd/dist /home/ubuntu/bd-site 2>&1");
+  //$a='/home/ubuntu';
+  //chdir($a);
+  //$output = shell_exec("sh static-process.sh 2>&1");
   //echo "<pre>$output</pre>";
-  //$output = shell_exec('ls');
-//$output = shell_exec('ssh -Tvv git@github.com');
-//$output = shell_exec('hostname');
-  //echo "<pre>$output</pre>";
-  $output = shell_exec("sh static-process.sh 2>&1");
-  echo "<pre>$output</pre>";
 
-  //var_dump(exec("sh static-process.sh"));
   //exec("git add .");
-  //exec("mv " . $path . " " . $a );
-  // var_dump(exec("git branch"));
-  // var_dump(exec("git log"));
-  // var_dump(exec("git remote -v"));
   //exec("git commit -m'" . time() . "'");
   //exec("git push origin master");
-  echo "<h3 align = center> Succesfully commited all the files.</h3>";
+  //echo "<h3 align = center> Succesfully commited all the files.</h3>";
 }
 
 

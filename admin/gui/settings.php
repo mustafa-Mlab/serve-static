@@ -2,12 +2,8 @@
  $checkboxArray = [];
  $flag = false;
  if( isset($_POST['list']) && !empty($_POST['checkboxArray']) && !empty($_POST['static_path'])){
-   if( isset($_POST['subfolder-name']) && !empty( $_POST['subfolder-name'])){
     update_option('subfolder-name', $_POST['subfolder-name'], '' );
-   }
-   if( isset($_POST['localfolder']) && !empty( $_POST['localfolder'])){
     update_option('localfolder', $_POST['localfolder'], '' );
-   }
    if( isset($_POST['local-server-address']) && !empty( $_POST['local-server-address'])){
     update_option('local-server-address', $_POST['local-server-address'], '' );
   }else{
@@ -54,13 +50,14 @@
       </select>
       <br><br>
       <label for="static_path">Path to store data</label>
-      <input type="text" name="static_path" id="static_path" value="<?= get_option('static_path',  ABSPATH );?>" size="200" /> dist/
+      <input type="text" name="static_path" id="static_path" value="<?= get_option('static_path',  ABSPATH );?>" size="200" />
       <br><br> 
       <label for="subfolder-name">Subfolder Name</label>
       <input type="text" name="subfolder-name" id="subfolder-name" value="<?= get_option('subfolder-name',  '' );?>" width="200" />
       <br><br> 
       <label for="localfolder">Local Folder</label>
       <input type="text" name="localfolder" id="localfolder" value="<?= get_option('localfolder',  'dist' );?>" width="200" />
+      <br><p>Do not use slash in the end</p>
       <br><br> 
       <label for="local-server-address">Local Server Address</label>
       <input type="text" name="local-server-address" id="local-server-address" value="<?= get_option('local-server-address', home_url(). 'dist') ;?>" size="200" />

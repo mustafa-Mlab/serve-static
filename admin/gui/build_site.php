@@ -315,7 +315,7 @@
 
   <div class="form">
   <div class="progress-report">
-
+  <ul></ul>
   </div>
     <form action="#" id="server_static_builder" name="server_static_builder" method="post">
       <input type="hidden" name="allurl" id="allurl" value='<?= json_encode($allUrls);?>'>
