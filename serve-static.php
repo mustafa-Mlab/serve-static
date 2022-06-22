@@ -265,15 +265,27 @@ function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldernam
 
 
 function updateGithubRepo(){
-  $path = "/home/nisan/Sites/rnd/bd-site"; 
-  $a='';
-  chdir($path);
-  exec("git add .");  
-  // var_dump(exec("git branch"));  
-  // var_dump(exec("git log"));  
-  // var_dump(exec("git remote -v"));  
-  exec("git commit -m'" . time() . "'");
-  exec("git push origin master");
+  //$path = "/var/www/html/bd/dist";
+  $a='/home/ubuntu';
+  //$b = "/var/www/html/bd";
+  chdir($a);
+  //$output = shell_exec("sudo cp -r /var/www/html/bd/dist /home/ubuntu/bd-site 2>&1");
+  //echo "<pre>$output</pre>";
+  //$output = shell_exec('ls');
+//$output = shell_exec('ssh -Tvv git@github.com');
+//$output = shell_exec('hostname');
+  //echo "<pre>$output</pre>";
+  $output = shell_exec("sh static-process.sh 2>&1");
+  echo "<pre>$output</pre>";
+
+  //var_dump(exec("sh static-process.sh"));
+  //exec("git add .");
+  //exec("mv " . $path . " " . $a );
+  // var_dump(exec("git branch"));
+  // var_dump(exec("git log"));
+  // var_dump(exec("git remote -v"));
+  //exec("git commit -m'" . time() . "'");
+  //exec("git push origin master");
   echo "<h3 align = center> Succesfully commited all the files.</h3>";
 }
 
