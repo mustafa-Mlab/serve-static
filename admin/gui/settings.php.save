@@ -69,6 +69,10 @@
           </label><br>  
         <?php } ?>
         <br><br>
+	<label>
+            <input type="checkbox" name="checkboxArray[]" class="postTypeInputBox" value="<?= $post_type; ?>" <?= ( $fl>
+            <?= ucfirst($post_type); ?>
+          </label><br>
         <input type="submit" value="Get Post Types List" name="list" >
       </form>
     <br>

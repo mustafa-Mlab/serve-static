@@ -43,7 +43,9 @@
           //   passed.push(postID);
           //   // passed[postID] = response;
           // }
-          console.log(response);
+//let modResponse =  response.replaceAll('&', '&amp;').replaceAll('<','&lt;').replaceAll('>', '&gt;');
+          $('.progress-report > ul').append('<li>' + response + '</li>');
+          console.log("the response is : ", response);
           // $('.report .items-finished').append('<li>' + postID + ' ended copying as ' + response + ' </li>');
         },
         async:false
@@ -53,7 +55,7 @@
 
     $('#server_static_builder').submit(function (e){
       e.preventDefault();
-      
+
       const allURLS =  $.parseJSON($('input[name="allurl"]').val());
       const filestructures = $('input[name="filestructures"]').val();
       const homeurl =  $('input[name="homeurl"]').val();
@@ -102,8 +104,6 @@
         $('form').append("<div class='sucess' style='color: green; font-size:'60px'; text-align:'center'; '>Done</div>");
       };
       forLoop();
-      
-
 
     });
   })
