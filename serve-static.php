@@ -147,14 +147,56 @@ function nss_add_custom_css_to_admin( $hook ) {
 add_action( 'admin_enqueue_scripts', 'nss_add_custom_css_to_admin' );
 
 
-function nss_build_page(){
-  $localServer = get_option('local-server-address', '');
-  $mainURL = $_POST['mainurl'];
+function nss_static_page($url = NULL, $home = NULL, $subfolder = NULL){
+  $localServer = get_option('local-staticr-address', '');
+  if($url == NULL || $home == NULL || $subfolder == NULL){
+    $mainURL = $_POST['mainurl'];
+    $homeURL = $_POST['homeurl'];
+    $subfoldername = $_POST['subfoldername'];
+  }else{
+    $mainURL = $url;
+    $homeURL = $home;
+    $subfoldername = $subfolder;
+  }
   $pageFlag = 0;
   $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist')]; 
-  $homeURL = $_POST['homeurl'];
-  $subfoldername = $_POST['subfoldername'];
+  
   $html = file_get_contents( $mainURL);
+
+  $stringToReplace = [
+    '<link rel="stylesheet" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/style.css">',
+    '<link rel="icon" type="image/ico" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/public/images/favicon.ico">',
+    '<link rel="icon" type="image/png" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/public/images/favicon.png">',
+    '<link rel="apple-touch-icon" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/public/images/apple-touch-icon.png">',
+    '<link rel="https://api.w.org/" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/" />',
+    '<link rel="alternate" type="application/json" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/wp/v2/pages/2151" />',
+    '<link rel="canonical" href="https://dev-test.monstar-lab.com/bd/bd-admin/" />',
+    '<link rel=\'shortlink\' href=\'https://dev-test.monstar-lab.com/bd/bd-admin/\' />',
+    '<link rel="alternate" type="application/json+oembed" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdev-test.monstar-lab.com%2Fbd%2Fbd-admin%2F" />',
+    '<link rel="alternate" type="text/xml+oembed" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdev-test.monstar-lab.com%2Fbd%2Fbd-admin%2F&#038;format=xml" />',
+    '<script type=\'text/javascript\' src=\'https://dev-test.monstar-lab.com/bd/bd-admin/wp-includes/js/jquery/jquery.min.js\' id=\'jquery-core-js\'></script>',
+    "<script type='text/javascript' src='https://dev-test.monstar-lab.com/bd/bd-admin/wp-includes/js/jquery/jquery-migrate.min.js' id='jquery-migrate-js'></script>",
+    '/(<style id=\'global-styles-inline-css\' type=\'text\/css\'>)*(^<\/style>)/m'
+  ];
+
+  $stringToReplaceWith = [
+    '',
+    '',
+    '<link rel="icon" type="image/png" href="https://dev-bd-website.s3.ap-northeast-1.amazonaws.com/bd/bd-admin/assets/uploads/2022/07/favicon.png">',
+    '<link rel="apple-touch-icon" href="https://dev-bd-website.s3.ap-northeast-1.amazonaws.com/bd/bd-admin/assets/uploads/2022/07/apple-touch-icon.png">',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>',
+    '<script type=\'text/javascript\' src=\'https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.4.0/jquery-migrate.min.js\' ></script>',
+    ''
+  ];
+
+  $html = str_replace($stringToReplace, $stringToReplaceWith, $html);
+
   /* Firstly make the folder to write a file */
   $url = substr_replace(substr(parse_url($mainURL)['path'], 1), "", -1) ;
   $subURL = str_replace($homeURL,"", $url);
@@ -169,9 +211,9 @@ function nss_build_page(){
     $filename = $thisPath . $path . '/';
     if (!file_exists($filename)) {
       mkdir( $thisPath .  $path, 0777);
-      echo "The directory ". $path . " was successfully created.<br>";
+//      echo "The directory ". $path . " was successfully created.<br>";
     } else {
-      echo "The directory ". $path . " exists.<br>";
+//      echo "The directory ". $path . " exists.<br>";
     }
     $thisPath = $thisPath . $path . '/';
   }
@@ -186,37 +228,72 @@ function nss_build_page(){
   }else{
     $pageFlag = 0;
   }
-  
+
   // $pattern = '/(<a\s[^>]*href\s*=\s*([\"\']?))(?:https:\/\/dev\-test.monstar\-lab.com\/bd)([^\" >]*?)/Ui';
   $rehome = str_replace("/","\/",$homeURL);
   $rehome = str_replace("-","\-",$rehome);
   $pattern = '/(<a\s[^>]*href\s*=\s*([\"\']?))(?:' . $rehome . ')([^\" >]*?)/Ui';
   // $html = preg_replace($pattern, '${1}http://cache-bd.localhost${3}', $html);
-
   $html = preg_replace($pattern, '${1}'. $localServer .'${3}', $html);
-  /* Now write html in file */
-  $myfile = fopen($thisPath . "index.html", "c") or die("Unable to open file!");
+/* Now write html in file */
+
+  $myfile = fopen($thisPath . "index.html", "w") or die("Unable to open file!");
   fwrite($myfile, $html);
   fclose($myfile);
   echo $thisPath .'index.html' ;
 
   if($pageFlag == 1){
-    nss_build_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
+    nss_static_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
   }
   exit();
 }
 
-add_action( 'wp_ajax_build_page', 'nss_build_page' );
-add_action( 'wp_ajax_nopriv_build_page', 'nss_build_page' );
+add_action( 'wp_ajax_static_page', 'nss_static_page' );
+add_action( 'wp_ajax_nopriv_static_page', 'nss_static_page' );
 
 
-function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldername ){
-  $localServer = get_option('local-server-address', '');
+function nss_static_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldername ){
+  $localServer = get_option('local-staticr-address', '');
   $mainURL = $url;
   $pageFlag = 0;
   $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist')]; 
   $html = file_get_contents( $mainURL);
   /* Firstly make the folder to write a file */
+
+  $stringToReplace = [
+    '<link rel="stylesheet" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/style.css">',
+    '<link rel="icon" type="image/ico" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/public/images/favicon.ico">',
+    '<link rel="icon" type="image/png" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/public/images/favicon.png">',
+    '<link rel="apple-touch-icon" href="https://dev-test.monstar-lab.com/bd/bd-admin/assets/themes/monstar_lab/public/images/apple-touch-icon.png">',
+    '<link rel="https://api.w.org/" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/" />',
+    '<link rel="alternate" type="application/json" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/wp/v2/pages/2151" />',
+    '<link rel="canonical" href="https://dev-test.monstar-lab.com/bd/bd-admin/" />',
+    '<link rel=\'shortlink\' href=\'https://dev-test.monstar-lab.com/bd/bd-admin/\' />',
+    '<link rel="alternate" type="application/json+oembed" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdev-test.monstar-lab.com%2Fbd%2Fbd-admin%2F" />',
+    '<link rel="alternate" type="text/xml+oembed" href="https://dev-test.monstar-lab.com/bd/bd-admin/wp-json/oembed/1.0/embed?url=https%3A%2F%2Fdev-test.monstar-lab.com%2Fbd%2Fbd-admin%2F&#038;format=xml" />',
+    '<script type=\'text/javascript\' src=\'https://dev-test.monstar-lab.com/bd/bd-admin/wp-includes/js/jquery/jquery.min.js\' id=\'jquery-core-js\'></script>',
+    "<script type='text/javascript' src='https://dev-test.monstar-lab.com/bd/bd-admin/wp-includes/js/jquery/jquery-migrate.min.js' id='jquery-migrate-js'></script>",
+    '/(<style id=\'global-styles-inline-css\' type=\'text\/css\'>)*(^<\/style>)/m'
+  ];
+
+  $stringToReplaceWith = [
+    '',
+    '',
+    '<link rel="icon" type="image/png" href="https://dev-bd-website.s3.ap-northeast-1.amazonaws.com/bd/bd-admin/assets/uploads/2022/07/favicon.png">',
+    '<link rel="apple-touch-icon" href="https://dev-bd-website.s3.ap-northeast-1.amazonaws.com/bd/bd-admin/assets/uploads/2022/07/apple-touch-icon.png">',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '',
+    '<script src="https://code.jquery.com/jquery-3.6.0.slim.min.js" integrity="sha256-u7e5khyithlIdTpu22PHhENmPcRdFiHRjhAuHcs05RI=" crossorigin="anonymous"></script>',
+    '<script type=\'text/javascript\' src=\'https://cdnjs.cloudflare.com/ajax/libs/jquery-migrate/3.4.0/jquery-migrate.min.js\' ></script>',
+    ''
+  ];
+
+  $html = str_replace($stringToReplace, $stringToReplaceWith, $html);
+
   $url = substr_replace(substr(parse_url($mainURL)['path'], 1), "", -1) ;
   $subURL = str_replace($homeURL,"", $url);
   $subURL2 = str_replace($subfoldername ."/","", $subURL);
@@ -262,7 +339,7 @@ function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldernam
   fclose($myfile);
   echo $thisPath .'index.html' ;
   if($pageFlag  == 1){
-    nss_build_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
+    nss_static_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
   }
   exit();
 }
@@ -283,3 +360,90 @@ function updateGithubRepo(){
 
 add_action( 'wp_ajax_updateGithubRepo', 'updateGithubRepo' );
 add_action( 'wp_ajax_nopriv_updateGithubRepo', 'updateGithubRepo' );
+
+
+
+/*  DISABLE GUTENBERG STYLE IN HEADER| WordPress 5.9 */
+function nss_deregister_styles() {
+  wp_dequeue_style( 'global-styles' );
+}
+add_action( 'wp_enqueue_scripts', 'nss_deregister_styles', 100 );
+
+
+class SERVESTATIC_CLI {
+
+	/**
+	 * Returns 'Build Static Site'
+	 *
+	 * @since  1.0.0
+	 * @author Mustafa Kamal Hossain
+	 */
+	public function build() {
+		WP_CLI::line( 'Starting Genaretion of static content' );
+    $homeURL = home_url();
+    $post_types = get_option( 'static_post_types', '' );
+    $postTypes = explode(',', $post_types);
+    $posts = get_posts([
+        'posts_per_page' => -1,
+        'post_status' => 'publish',
+        'post_type' => $postTypes,
+    ]);
+    
+    $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist' )];
+    $localFolderPath = explode('/', $filestructures['localfolder']);
+    $root = $filestructures['root'];
+    foreach( $localFolderPath as $id => $folder){
+      // WP_CLI::line(file_exists($folder));
+      if (file_exists($root . $folder)) {
+        echo "The directory ".$folder . " exists.<br>";
+      } else {
+        WP_CLI::line($folder);
+        mkdir($root .  $folder, 0777);
+        echo "The directory ".$folder . " was successfully created.<br>";
+      }
+      $root = $root . $folder . '/';
+    }
+    $subFolderName = get_option('subfolder-name',  '' );
+    $assoc_args = [$homeURL, $subFolderName];
+    $this->generate_posts_progress_bar($posts, $assoc_args);
+	}
+
+  /**
+ * Displays progress bar to demonstrate progression through a time consuming process.
+ *
+ * @param Array $args Arguments in array format.
+ * @param Array $assoc_args Key value arguments stored in associated array format.
+ * @since 1.0.0
+ * @author Mustafa Kamal Hossain
+ */
+public function generate_posts_progress_bar( $args= [], $assoc_args = [] ) {
+
+  $desired_posts_to_generate = count($args);
+
+  $progress = \WP_CLI\Utils\make_progress_bar( 'Generating Content', $desired_posts_to_generate );
+
+  foreach( $args as $key=> $value){
+    $link = get_permalink($value);
+    WP_CLI::line( $value->post_title );
+    WP_CLI::line( $link );
+    nss_static_page($link, $assoc_args[0], $assoc_args[1]);
+    $progress->tick();
+  }
+
+  $progress->finish();
+
+}
+
+}
+
+/**
+ * Registers our command when cli get's initialized.
+ *
+ * @since  1.0.0
+ * @author Scott Anderson
+ */
+function static_cli_register_commands() {
+	WP_CLI::add_command( 'static', 'SERVESTATIC_CLI' );
+}
+
+add_action( 'cli_init', 'static_cli_register_commands' );

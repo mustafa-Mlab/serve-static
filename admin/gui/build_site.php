@@ -5,11 +5,11 @@
   $localFolderPath = explode('/', $filestructures['localfolder']);
   $root = $filestructures['root'];
   foreach( $localFolderPath as $id => $folder){
-    if (!file_exists($folder)) {
+    if (file_exists($root . $folder)) {
+      echo "The directory ".$folder . " exists.<br>";
+    } else {
       mkdir($root .  $folder, 0777);
       echo "The directory ".$folder . " was successfully created.<br>";
-    } else {
-      echo "The directory ".$folder . " exists.<br>";
     }
     $root = $root . $folder . '/';
   }
