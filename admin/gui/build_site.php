@@ -30,9 +30,6 @@
   foreach($terms as $key => $value){
     array_push($allUrls , get_category_link($value) );
   }
-  //$output = make_static_using_CLI2();
-  $output = updateGithubRepo();
-  echo "<pre>"; var_dump($output); echo "</pre>";
 ?>
 
 <div class="wrap">
