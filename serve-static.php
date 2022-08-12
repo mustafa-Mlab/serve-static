@@ -96,16 +96,6 @@ function serve_static_add_settings_page() {
     'nss_update_repo',
     6
   );
-  
-  // $submenu[] = add_submenu_page(
-  //   'wp-copier/options-settings.php',
-  //   __( 'Content refactor', 'serve_static' ),
-  //   __( 'Content refactor', 'serve_static' ),
-  //   'manage_options',
-  //   'wp-copier/content_replair.php',
-  //   'nss_repair_content',
-  //   7
-  // );
 }
 add_action( 'admin_menu', 'serve_static_add_settings_page' );
 
@@ -147,20 +137,21 @@ function nss_add_custom_css_to_admin( $hook ) {
 add_action( 'admin_enqueue_scripts', 'nss_add_custom_css_to_admin' );
 
 
-function nss_static_page($url = NULL, $home = NULL, $subfolder = NULL){
-  $localServer = get_option('local-staticr-address', '');
-  if($url == NULL || $home == NULL || $subfolder == NULL){
+function nss_build_page($url = NULL , $home = NULL ){
+  $localServer = get_option('local-server-address', '');
+  $cliFlag = 0;
+  $subfoldername = get_option('subfolder-name',  '' );
+  if($url == NULL || $home == NULL ){
     $mainURL = $_POST['mainurl'];
     $homeURL = $_POST['homeurl'];
-    $subfoldername = $_POST['subfoldername'];
   }else{
     $mainURL = $url;
     $homeURL = $home;
-    $subfoldername = $subfolder;
+    $cliFlag = 1;
   }
+
   $pageFlag = 0;
   $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist')]; 
-  
   $html = file_get_contents( $mainURL);
 
   $stringToReplace = [
@@ -240,20 +231,20 @@ function nss_static_page($url = NULL, $home = NULL, $subfolder = NULL){
   $myfile = fopen($thisPath . "index.html", "w") or die("Unable to open file!");
   fwrite($myfile, $html);
   fclose($myfile);
-  echo $thisPath .'index.html' ;
+  //echo $thisPath .'index.html' ;
 
   if($pageFlag == 1){
-    nss_static_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
+    nss_build_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername, $cliFlag );
   }
-  exit();
+  if(! $cliFlag) exit();
 }
 
-add_action( 'wp_ajax_static_page', 'nss_static_page' );
-add_action( 'wp_ajax_nopriv_static_page', 'nss_static_page' );
+add_action( 'wp_ajax_build_page', 'nss_build_page' );
+add_action( 'wp_ajax_nopriv_build_page', 'nss_build_page' );
 
 
-function nss_static_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldername ){
-  $localServer = get_option('local-staticr-address', '');
+function nss_build_paged_metarial($url, $prev_page = 0, $homeURL , $subfoldername, $cliFlag ){
+  $localServer = get_option('local-server-address', '');
   $mainURL = $url;
   $pageFlag = 0;
   $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist')]; 
@@ -305,9 +296,9 @@ function nss_static_paged_metarial($url, $prev_page = 0, $homeURL , $subfolderna
     $filename = $thisPath . $path . '/';
     if (!file_exists($filename)) {
       mkdir( $thisPath .  $path, 0777);
-      echo "The directory ". $path . " was successfully created.<br>";
+//      echo "The directory ". $path . " was successfully created.<br>";
     } else {
-      echo "The directory ". $path . " exists.<br>";
+ //     echo "The directory ". $path . " exists.<br>";
     }
     $thisPath = $thisPath . $path . '/';
   }
@@ -337,24 +328,21 @@ function nss_static_paged_metarial($url, $prev_page = 0, $homeURL , $subfolderna
   $myfile = fopen($thisPath . "index.html", "w") or die("Unable to open file!");
   fwrite($myfile, $html);
   fclose($myfile);
-  echo $thisPath .'index.html' ;
+//  echo $thisPath .'index.html' ;
   if($pageFlag  == 1){
-    nss_static_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername );
+    nss_build_paged_metarial( $pageURL, $prev_page, $homeURL , $subfoldername, $cliFlag );
   }
-  exit();
+  if(! $cliFlag) exit();
 }
 
 
-function updateGithubRepo(){
-  //$a='/home/ubuntu';
-  //chdir($a);
-  //$output = shell_exec("sh static-process.sh 2>&1");
-  //echo "<pre>$output</pre>";
 
-  //exec("git add .");
-  //exec("git commit -m'" . time() . "'");
-  //exec("git push origin master");
-  //echo "<h3 align = center> Succesfully commited all the files.</h3>";
+function updateGithubRepo(){
+  $a='/home/ubuntu';
+  chdir($a);
+  $output = shell_exec("sh static-process.sh 2>&1");
+  echo "<pre>$output</pre>";
+  return json_encode($output);
 }
 
 
@@ -389,11 +377,10 @@ class SERVESTATIC_CLI {
         'post_type' => $postTypes,
     ]);
     
-    $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist' )];
+    $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => '-img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist' )];
     $localFolderPath = explode('/', $filestructures['localfolder']);
     $root = $filestructures['root'];
     foreach( $localFolderPath as $id => $folder){
-      // WP_CLI::line(file_exists($folder));
       if (file_exists($root . $folder)) {
         echo "The directory ".$folder . " exists.<br>";
       } else {
@@ -403,8 +390,7 @@ class SERVESTATIC_CLI {
       }
       $root = $root . $folder . '/';
     }
-    $subFolderName = get_option('subfolder-name',  '' );
-    $assoc_args = [$homeURL, $subFolderName];
+    $assoc_args = [$homeURL];
     $this->generate_posts_progress_bar($posts, $assoc_args);
 	}
 
@@ -417,22 +403,19 @@ class SERVESTATIC_CLI {
  * @author Mustafa Kamal Hossain
  */
 public function generate_posts_progress_bar( $args= [], $assoc_args = [] ) {
-
   $desired_posts_to_generate = count($args);
-
   $progress = \WP_CLI\Utils\make_progress_bar( 'Generating Content', $desired_posts_to_generate );
-
   foreach( $args as $key=> $value){
     $link = get_permalink($value);
-    WP_CLI::line( $value->post_title );
-    WP_CLI::line( $link );
-    nss_static_page($link, $assoc_args[0], $assoc_args[1]);
+ //   WP_CLI::line( $value->post_title );
+    nss_build_page($link, $assoc_args[0]);
     $progress->tick();
   }
 
   $progress->finish();
-
-}
+  WP_CLI::success("Content Genaration has Completed, Thanks for being Patients");
+  updateGithubRepo();
+  }
 
 }
 
@@ -440,10 +423,61 @@ public function generate_posts_progress_bar( $args= [], $assoc_args = [] ) {
  * Registers our command when cli get's initialized.
  *
  * @since  1.0.0
- * @author Scott Anderson
+ * @author Mustafa Kamal
  */
 function static_cli_register_commands() {
 	WP_CLI::add_command( 'static', 'SERVESTATIC_CLI' );
 }
 
 add_action( 'cli_init', 'static_cli_register_commands' );
+
+
+function make_static_using_CLI($post_id, $post, $update)  {
+  //static-build.sh
+  // $a='/home/ubuntu';
+  // chdir($a);
+  // $output = [];
+  // $output["shell"] = shell_exec("sh static-build.sh 2>&1");
+  // $output["exec"] = exec( "sudo wp static build --allow-root");
+  // return json_encode($output);
+
+  $homeURL = home_url();
+  $post_types = get_option( 'static_post_types', '' );
+  $postTypes = explode(',', $post_types);
+  $posts = get_posts([
+      'posts_per_page' => -1,
+      'post_status' => 'publish',
+      'post_type' => $postTypes,
+  ]);
+  
+  $filestructures =['root'=> get_option('static_path',  ABSPATH ), 'asset' => 'img', 'styles'=> 'css', 'js' => 'js', 'localfolder' => get_option( 'localfolder', 'dist' )];
+  $localFolderPath = explode('/', $filestructures['localfolder']);
+  $root = $filestructures['root'];
+  foreach( $localFolderPath as $id => $folder){
+    if (file_exists($root . $folder)) {
+    } else {
+      mkdir($root .  $folder, 0777);
+    }
+    $root = $root . $folder . '/';
+  }
+  
+  foreach( $posts as $key=> $value){
+    $link = get_permalink($value);
+    nss_build_page($link,$homeURL);
+  }
+  updateGithubRepo();
+}
+
+//add_action('save_post', 'make_static_using_CLI', 30,3);
+
+
+function make_static_using_CLI2()  {
+  $a='/var/www/html/bd/bd-admin';
+  chdir($a);
+  $output = [];
+  //$output["shell"] = shell_exec("sh static-build.sh 2>&1");
+  $output["shell"] = shell_exec("wp static build");
+  //$output["exec"] = exec( "sudo wp static build --allow-root");
+  //updateGithubRepo();
+  return json_encode($output);
+}
