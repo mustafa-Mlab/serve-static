@@ -80,8 +80,8 @@ function serve_static_add_settings_page() {
   $submenu = [];
   $submenu[] = add_submenu_page(
     'sarve-static/options-settings.php',
-    __( 'Build site', 'serve_static' ),
-    __( 'Build site', 'serve_static' ),
+    __( 'Build site Only', 'serve_static' ),
+    __( 'Build site Only', 'serve_static' ),
     'manage_options',
     'serve-static/build-site.php',
     'nss_build_site',
@@ -90,7 +90,7 @@ function serve_static_add_settings_page() {
   $submenu[] = add_submenu_page(
     'sarve-static/options-settings.php',
     __( 'Build Site & Update Repo', 'serve_static' ),
-    __( 'Build sITE & Update Repo', 'serve_static' ),
+    __( 'Build Site & Update Repo', 'serve_static' ),
     'manage_options',
     'serve-static/update-repo.php',
     'nss_update_repo',
