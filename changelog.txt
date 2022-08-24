@@ -1,2 +1,8 @@
  = 1.0.0 - Apr, 24 2021 =
   * First realese on github
+= 2.0.0 Aug, 24, 2022
+ * Build site and update github repo.
+ * Added WP CLI support
+ * User bash script to build and update repo.
+ * Functionality updated.
+ * Reduced Build time.

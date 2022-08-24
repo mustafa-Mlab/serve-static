@@ -3,14 +3,14 @@
  * @link    http://mkhossain.com/development/plugins/serve-static
  * @package Serve Static
  * @since   1.0.0
- * @version 1.0.0
+ * @version 2.0.0
  *
  * @wordpress-plugin
  * Plugin Name: Serve Static
  * Plugin URI: http://mkhossain.com/development/plugins/serve-static
  * Description: This plugin will help to make a static site using WordPress, in this way ther will be no server required at all, no RDS or Database. 
  * Author: MD Mustafa Kamal Hossain
- * Version: 1.0.0
+ * Version: 2.0.0
  * Author URI: http://mkhossain.com
  * Text Domain: serve_static
  * Domain Path: /languages
@@ -40,9 +40,8 @@ if ( ! defined( 'SERVE_STATIC_PATH' ) ) {
 /**
  * Currently plugin version.
  * Start at version 1.0.0 and use SemVer - https://semver.org
- * Rename this for your plugin and update it as you release new versions.
  */
-define( 'SERVE_STATIC_VERSION', '1.0.0' );
+define( 'SERVE_STATIC_VERSION', '2.0.0' );
 
 /**
  * The code that runs during plugin activation.
