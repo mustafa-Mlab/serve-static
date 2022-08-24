@@ -465,6 +465,11 @@ function make_static_using_CLI($post_id, $post, $update)  {
     $link = get_permalink($value);
     nss_build_page($link,$homeURL);
   }
+
+  $terms = get_terms('ml-expertinsights-category', ['hide_empty' => true]);
+  foreach($terms as $key => $value){
+    nss_build_page( get_category_link($value) ,$homeURL);
+  }
   updateGithubRepo();
 }
 
